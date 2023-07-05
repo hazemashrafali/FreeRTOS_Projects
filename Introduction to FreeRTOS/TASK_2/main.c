@@ -75,11 +75,15 @@
 #define mainCOM_TEST_BAUD_RATE	( ( unsigned long ) 115200 )
 
 /*task delay*/
-#define LED_DELAY 1000
+#define LED1_DELAY 100
+#define LED2_DELAY 500
+#define LED3_DELAY 1000
+
 #define _1ST_PRIORITIE_RANK		1
 
-TaskHandle_t  LedTask_Handler = NULL;
-
+TaskHandle_t  Led1_Task_Handler = NULL;
+TaskHandle_t  Led2_Task_Handler = NULL;
+TaskHandle_t  Led3_Task_Handler = NULL;
 /*
  * Configure the processor for use with the Keil demo board.  This is very
  * minimal as most of the setup is managed by the settings in the project
@@ -90,18 +94,41 @@ static void prvSetupHardware( void );
 
 
 /*task to be created*/
-void Led_Task (void * pvParameters)
+void Led1_Task (void * pvParameters)
 {
 	for( ;; )
     {
         /* Task code goes here. */
 			GPIO_write(PORT_0,PIN1,PIN_IS_HIGH);
-			vTaskDelay(LED_DELAY);
+			vTaskDelay(LED1_DELAY);
 			GPIO_write(PORT_0,PIN1,PIN_IS_LOW);
-			vTaskDelay(LED_DELAY);	
+			vTaskDelay(LED1_DELAY);	
     }
 }
 
+void Led2_Task (void * pvParameters)
+{
+	for( ;; )
+    {
+        /* Task code goes here. */
+			GPIO_write(PORT_0,PIN2,PIN_IS_HIGH);
+			vTaskDelay(LED2_DELAY);
+			GPIO_write(PORT_0,PIN2,PIN_IS_LOW);
+			vTaskDelay(LED2_DELAY);	
+    }
+}
+
+void Led3_Task (void * pvParameters)
+{
+	for( ;; )
+    {
+        /* Task code goes here. */
+			GPIO_write(PORT_0,PIN3,PIN_IS_HIGH);
+			vTaskDelay(LED3_DELAY);
+			GPIO_write(PORT_0,PIN3,PIN_IS_LOW);
+			vTaskDelay(LED3_DELAY);	
+    }
+}
 
 /*
  * Application entry point:
@@ -114,14 +141,27 @@ int main( void )
 
 	
     /* Create Tasks here */
-							xTaskCreate(  Led_Task,
-                            "LED_TASK",
+							xTaskCreate(  Led1_Task,
+                            "LED1_TASK",
                             configMINIMAL_STACK_SIZE,
                             NULL,
                             _1ST_PRIORITIE_RANK ,
-                            &LedTask_Handler
+                            &Led1_Task_Handler
                           );
-
+								xTaskCreate(  Led2_Task,
+                            "LED2_TASK",
+                            configMINIMAL_STACK_SIZE,
+                            NULL,
+                            _1ST_PRIORITIE_RANK ,
+                            &Led2_Task_Handler
+                          );
+								xTaskCreate(  Led3_Task,
+                            "LED3_TASK",
+                            configMINIMAL_STACK_SIZE,
+                            NULL,
+                            _1ST_PRIORITIE_RANK ,
+                            &Led3_Task_Handler
+                          );
 	/* Now all the tasks have been started - start the scheduler.
 
 	NOTE : Tasks run in system mode and the scheduler runs in Supervisor mode.
