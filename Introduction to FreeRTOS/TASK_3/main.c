@@ -85,6 +85,10 @@
 #define _2ND_LED_STATE	1		//between 2 and 4 seconds
 #define _3RD_LED_STATE	2		//more than 4 seconds
 
+/*button press time*/
+#define BTN_PRESS_2000	2000
+#define BTN_PRESS_4000	4000
+
 /*PRIORITIE TYPEs*/
 #define _1ST_PRIORITIE_RANK		1
 
@@ -157,15 +161,15 @@ void Btn_Task (void * pvParameters)
 				while(GPIO_read(PORT_0,PIN0) == PIN_IS_LOW);
 				gl_u32_TickNumber_2 = xTaskGetTickCount();
 				gl_u32_TickNumber_3 = gl_u32_TickNumber_2 - gl_u32_TickNumber_1;
-				if(gl_u32_TickNumber_3 < 2000)
+				if(gl_u32_TickNumber_3 < BTN_PRESS_2000)
 				{
 					gl_enu_led_state = LED_STATE_1;
 				}
-				else if((gl_u32_TickNumber_3 > 2000) && (gl_u32_TickNumber_3 < 4000))
+				else if((gl_u32_TickNumber_3 > BTN_PRESS_2000) && (gl_u32_TickNumber_3 < BTN_PRESS_4000))
 				{
 					gl_enu_led_state = LED_STATE_2;
 				}
-				else if(gl_u32_TickNumber_3 > 4000)
+				else if(gl_u32_TickNumber_3 > BTN_PRESS_4000)
 				{
 					gl_enu_led_state = LED_STATE_3;
 				}
