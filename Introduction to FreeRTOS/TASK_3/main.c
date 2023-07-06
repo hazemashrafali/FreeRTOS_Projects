@@ -77,8 +77,8 @@
 
 
 /*task delay*/
-#define LED_DELAY_1 100
-#define LED_DELAY_2 400
+#define LED_DELAY_100 100
+#define LED_DELAY_400 400
 
 /*Led state*/
 #define _1ST_LED_STATE	0		//less than 2 seconds
@@ -128,16 +128,16 @@ void Led_Task (void * pvParameters)
 			else if(gl_enu_led_state == LED_STATE_2)
 			{
 				GPIO_write(PORT_0,PIN1,PIN_IS_HIGH);
-				vTaskDelay(LED_DELAY_2);
+				vTaskDelay(LED_DELAY_400);
 				GPIO_write(PORT_0,PIN1,PIN_IS_LOW);
-				vTaskDelay(LED_DELAY_2);
+				vTaskDelay(LED_DELAY_400);
 			}
 			else if(gl_enu_led_state == LED_STATE_3)
 			{
 				GPIO_write(PORT_0,PIN1,PIN_IS_HIGH);
-				vTaskDelay(LED_DELAY_1);
+				vTaskDelay(LED_DELAY_100);
 				GPIO_write(PORT_0,PIN1,PIN_IS_LOW);
-				vTaskDelay(LED_DELAY_1);
+				vTaskDelay(LED_DELAY_100);
 			}
 			else
 			{
