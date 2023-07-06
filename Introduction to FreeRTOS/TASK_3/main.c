@@ -74,12 +74,38 @@
 /* Constants for the ComTest demo application tasks. */
 #define mainCOM_TEST_BAUD_RATE	( ( unsigned long ) 115200 )
 
+
+
 /*task delay*/
-#define LED_DELAY 1000
+#define LED_DELAY_1 100
+#define LED_DELAY_2 400
+
+/*Led state*/
+#define _1ST_LED_STATE	0		//less than 2 seconds
+#define _2ND_LED_STATE	1		//between 2 and 4 seconds
+#define _3RD_LED_STATE	2		//more than 4 seconds
+
+/*PRIORITIE TYPEs*/
 #define _1ST_PRIORITIE_RANK		1
 
-TaskHandle_t  LedTask_Handler = NULL;
+/*Tasks Handlers*/
+TaskHandle_t  Led_Task_Handler = NULL;
+TaskHandle_t  Btn_Task_Handler = NULL;
 
+
+/*tick variables*/
+uint32_t gl_u32_TickNumber_1	=	0;
+uint32_t gl_u32_TickNumber_2	=	0;
+uint32_t gl_u32_TickNumber_3	=	0;
+
+typedef enum{
+	LED_STATE_1,
+	LED_STATE_2,
+	LED_STATE_3,
+	MAX_LED_STATE
+}enu_led_state_t;
+
+enu_led_state_t gl_enu_led_state = MAX_LED_STATE;
 /*
  * Configure the processor for use with the Keil demo board.  This is very
  * minimal as most of the setup is managed by the settings in the project
@@ -95,13 +121,63 @@ void Led_Task (void * pvParameters)
 	for( ;; )
     {
         /* Task code goes here. */
-			GPIO_write(PORT_0,PIN1,PIN_IS_HIGH);
-			vTaskDelay(LED_DELAY);
-			GPIO_write(PORT_0,PIN1,PIN_IS_LOW);
-			vTaskDelay(LED_DELAY);	
+			if(gl_enu_led_state == LED_STATE_1)
+			{
+				GPIO_write(PORT_0,PIN1,PIN_IS_LOW);
+			}
+			else if(gl_enu_led_state == LED_STATE_2)
+			{
+				GPIO_write(PORT_0,PIN1,PIN_IS_HIGH);
+				vTaskDelay(LED_DELAY_2);
+				GPIO_write(PORT_0,PIN1,PIN_IS_LOW);
+				vTaskDelay(LED_DELAY_2);
+			}
+			else if(gl_enu_led_state == LED_STATE_3)
+			{
+				GPIO_write(PORT_0,PIN1,PIN_IS_HIGH);
+				vTaskDelay(LED_DELAY_1);
+				GPIO_write(PORT_0,PIN1,PIN_IS_LOW);
+				vTaskDelay(LED_DELAY_1);
+			}
+			else
+			{
+				//do nothing
+			}
     }
 }
 
+void Btn_Task (void * pvParameters)
+{
+	for( ;; )
+    {
+        /* Task code goes here. */
+			if(GPIO_read(PORT_0,PIN0) == PIN_IS_LOW)
+			{
+				gl_u32_TickNumber_1 = xTaskGetTickCount();
+				while(GPIO_read(PORT_0,PIN0) == PIN_IS_LOW);
+				gl_u32_TickNumber_2 = xTaskGetTickCount();
+				gl_u32_TickNumber_3 = gl_u32_TickNumber_2 - gl_u32_TickNumber_1;
+				if(gl_u32_TickNumber_3 < 2000)
+				{
+					gl_enu_led_state = LED_STATE_1;
+				}
+				else if((gl_u32_TickNumber_3 > 2000) && (gl_u32_TickNumber_3 < 4000))
+				{
+					gl_enu_led_state = LED_STATE_2;
+				}
+				else if(gl_u32_TickNumber_3 > 4000)
+				{
+					gl_enu_led_state = LED_STATE_3;
+				}
+				else
+				{
+					//do nothing
+				}
+			}
+			
+			
+    }
+}
 
 /*
  * Application entry point:
@@ -119,9 +195,15 @@ int main( void )
                             configMINIMAL_STACK_SIZE,
                             NULL,
                             _1ST_PRIORITIE_RANK ,
-                            &LedTask_Handler
+                            &Led_Task_Handler
                           );
-
+								xTaskCreate(  Btn_Task,
+                            "BUTTON_TASK",
+                            configMINIMAL_STACK_SIZE,
+                            NULL,
+                            _1ST_PRIORITIE_RANK ,
+                            &Btn_Task_Handler
+                          );
 	/* Now all the tasks have been started - start the scheduler.
 
 	NOTE : Tasks run in system mode and the scheduler runs in Supervisor mode.
