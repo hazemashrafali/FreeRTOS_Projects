@@ -74,26 +74,12 @@
 /* Constants for the ComTest demo application tasks. */
 #define mainCOM_TEST_BAUD_RATE	( ( unsigned long ) 115200 )
 
-
-
-/*task delay*/
-#define LED_DELAY_100 100
-#define LED_DELAY_400 400
-
+/*TASK macros*/
 #define ULONG_MAX 		0xFFFFFFFF
 #define NOTIFY_VALUE	0x01
 #define TRUE	1
 #define FALSE	0
 
-
-/*Led state*/
-#define _1ST_LED_STATE	0		//less than 2 seconds
-#define _2ND_LED_STATE	1		//between 2 and 4 seconds
-#define _3RD_LED_STATE	2		//more than 4 seconds
-
-/*button press time*/
-#define BTN_PRESS_2000	2000
-#define BTN_PRESS_4000	4000
 
 /*PRIORITIE TYPEs*/
 #define _1ST_PRIORITIE_RANK		1
@@ -102,15 +88,6 @@
 TaskHandle_t  Led_Task_Handler = NULL;
 TaskHandle_t  Btn_Task_Handler = NULL;
 
-
-typedef enum{
-	LED_STATE_1,
-	LED_STATE_2,
-	LED_STATE_3,
-	MAX_LED_STATE
-}enu_led_state_t;
-
-enu_led_state_t gl_enu_led_state = MAX_LED_STATE;
 /*
  * Configure the processor for use with the Keil demo board.  This is very
  * minimal as most of the setup is managed by the settings in the project
