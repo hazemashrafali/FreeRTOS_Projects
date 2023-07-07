@@ -115,13 +115,13 @@ void UART_Task1 (void * pvParameters)
 				if( xSemaphoreTake( UART_semaphore,  portMAX_DELAY ) == pdTRUE )
 				{
 						GPIO_write(PORT_0,PIN2,PIN_IS_HIGH);
-						vSerialPutString( ( signed char * ) "-----TASK1-----\n", 17 );
-						vTaskDelay( 5 );
+						while ( vSerialPutString( ( signed char * ) "-----TASK1-----\n", 17 ) == pdFALSE);
+				
 						for ( u8_index = 0; u8_index < 10; u8_index++ )
 						{
 							xSerialPutChar (u8_index + '0');
-							vSerialPutString( ( signed char * ) "-this is task 1 string\n", 24 );
-							vTaskDelay( 5 );
+							vTaskDelay( 1 );
+							while(vSerialPutString( ( signed char * ) "-this is task 1 string\n", 24 ) == pdFALSE);
 						}
 						GPIO_write(PORT_0,PIN2,PIN_IS_LOW);
 					xSemaphoreGive( UART_semaphore );
@@ -145,17 +145,16 @@ void UART_Task2 (void * pvParameters)
 			if(UART_semaphore != NULL)
 			{
 				 /* See if we can obtain the semaphore.  If the semaphore is not
-        available wait 10 ticks to see if it becomes free. */
-				if( xSemaphoreTake( UART_semaphore, ( TickType_t ) 200 ) == pdTRUE )
+        available wait max ticks to see if it becomes free. */
+				if( xSemaphoreTake( UART_semaphore, portMAX_DELAY ) == pdTRUE )
 				{
 						GPIO_write(PORT_0,PIN1,PIN_IS_HIGH);
-						vSerialPutString( ( signed char * ) "-----TASK2-----\n", 17 );
-						vTaskDelay( 5 );
+						while ( vSerialPutString( ( signed char * ) "-----TASK2-----\n", 17 )== pdFALSE);			
 						for ( u8_index = 0; u8_index < 10; u8_index++ )
 						{
 							xSerialPutChar (u8_index + '0');
-							vSerialPutString( ( signed char * ) "-this is task 2 string\n", 24 );
-							//vTaskDelay( 5 );
+							vTaskDelay( 2 );
+							while( vSerialPutString( ( signed char * ) "-this is task 2 string\n", 24 ) == pdFALSE);
 							/*heavy load simulation*/
 							for(u32_index=0; u32_index < 100000; u32_index++);
 						}
