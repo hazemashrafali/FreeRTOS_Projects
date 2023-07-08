@@ -55,7 +55,7 @@
 /* Standard includes. */
 #include <stdlib.h>
 #include <stdio.h>
-
+#include <string.h>
 /* Scheduler includes. */
 #include "FreeRTOS.h"
 #include "task.h"
@@ -80,8 +80,12 @@
 #define NOTIFY_VALUE	0x01
 #define TRUE	1
 #define FALSE	0
-
-
+#define MAX_LOOP_INDEX		10
+#define HEAVY_LOAD_CYCLE	100000
+#define WAIT1_DELAY	5
+#define WAIT2_DELAY	2
+#define TASK1_DELAY	100
+#define TASK2_DELAY	500
 
 /*PRIORITIE TYPEs*/
 #define _1ST_PRIORITIE_RANK		1
@@ -115,13 +119,13 @@ void UART_Task1 (void * pvParameters)
 				if( xSemaphoreTake( UART_semaphore,  portMAX_DELAY ) == pdTRUE )
 				{
 						GPIO_write(PORT_0,PIN2,PIN_IS_HIGH);
-						while ( vSerialPutString( ( signed char * ) "-----TASK1-----\n", 17 ) == pdFALSE);
+						while ( vSerialPutString( ( signed char * ) "-----TASK1-----\n", sizeof("-----TASK1-----\n")) == pdFALSE);
 				
-						for ( u8_index = 0; u8_index < 10; u8_index++ )
+						for ( u8_index = 0; u8_index < MAX_LOOP_INDEX; u8_index++ )
 						{
 							xSerialPutChar (u8_index + '0');
-							vTaskDelay( 1 );
-							while(vSerialPutString( ( signed char * ) "-this is task 1 string\n", 24 ) == pdFALSE);
+							vTaskDelay( WAIT2_DELAY );
+							while(vSerialPutString( ( signed char * ) "-this is task 1 string\n", sizeof("-this is task 1 string\n") ) == pdFALSE);
 						}
 						GPIO_write(PORT_0,PIN2,PIN_IS_LOW);
 					xSemaphoreGive( UART_semaphore );
@@ -132,7 +136,7 @@ void UART_Task1 (void * pvParameters)
             the shared resource safely. */
 				}		
 			}
-			vTaskDelay( 100 );
+			vTaskDelay( TASK1_DELAY );
     }
 }
 
@@ -149,14 +153,14 @@ void UART_Task2 (void * pvParameters)
 				if( xSemaphoreTake( UART_semaphore, portMAX_DELAY ) == pdTRUE )
 				{
 						GPIO_write(PORT_0,PIN1,PIN_IS_HIGH);
-						while ( vSerialPutString( ( signed char * ) "-----TASK2-----\n", 17 )== pdFALSE);			
-						for ( u8_index = 0; u8_index < 10; u8_index++ )
+						while ( vSerialPutString( ( signed char * ) "-----TASK2-----\n", sizeof("-----TASK2-----\n") )== pdFALSE);			
+						for ( u8_index = 0; u8_index < MAX_LOOP_INDEX; u8_index++ )
 						{
 							xSerialPutChar (u8_index + '0');
-							vTaskDelay( 2 );
-							while( vSerialPutString( ( signed char * ) "-this is task 2 string\n", 24 ) == pdFALSE);
+							vTaskDelay( WAIT2_DELAY );
+							while( vSerialPutString( ( signed char * ) "-this is task 2 string\n", sizeof("-this is task 2 string\n") ) == pdFALSE);
 							/*heavy load simulation*/
-							for(u32_index=0; u32_index < 100000; u32_index++);
+							for(u32_index=0; u32_index < HEAVY_LOAD_CYCLE; u32_index++);
 						}
 						GPIO_write(PORT_0,PIN1,PIN_IS_LOW);
 					xSemaphoreGive( UART_semaphore );
@@ -167,7 +171,7 @@ void UART_Task2 (void * pvParameters)
             the shared resource safely. */
 				}
 			}
-			vTaskDelay( 500 );
+			vTaskDelay( TASK2_DELAY );
     }
 }
 
