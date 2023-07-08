@@ -123,9 +123,9 @@ void UART_Task1 (void * pvParameters)
 				
 						for ( u8_index = 0; u8_index < MAX_LOOP_INDEX; u8_index++ )
 						{
-							xSerialPutChar (u8_index + '0');
-							vTaskDelay( WAIT2_DELAY );
-							while(vSerialPutString( ( signed char * ) "-this is task 1 string\n", sizeof("-this is task 1 string\n") ) == pdFALSE);
+							//xSerialPutChar (u8_index + '0');
+							//vTaskDelay( WAIT2_DELAY );
+							while(vSerialPutString( ( signed char * ) "this is task 1 string\n", sizeof("this is task 1 string\n") ) == pdFALSE);
 						}
 						GPIO_write(PORT_0,PIN2,PIN_IS_LOW);
 					xSemaphoreGive( UART_semaphore );
@@ -156,9 +156,9 @@ void UART_Task2 (void * pvParameters)
 						while ( vSerialPutString( ( signed char * ) "-----TASK2-----\n", sizeof("-----TASK2-----\n") )== pdFALSE);			
 						for ( u8_index = 0; u8_index < MAX_LOOP_INDEX; u8_index++ )
 						{
-							xSerialPutChar (u8_index + '0');
-							vTaskDelay( WAIT2_DELAY );
-							while( vSerialPutString( ( signed char * ) "-this is task 2 string\n", sizeof("-this is task 2 string\n") ) == pdFALSE);
+							//xSerialPutChar (u8_index + '0');
+							//vTaskDelay( WAIT2_DELAY );
+							while( vSerialPutString( ( signed char * ) "this is task 2 string\n", sizeof("this is task 2 string\n") ) == pdFALSE);
 							/*heavy load simulation*/
 							for(u32_index=0; u32_index < HEAVY_LOAD_CYCLE; u32_index++);
 						}
